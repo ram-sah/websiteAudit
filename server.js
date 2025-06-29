@@ -6,34 +6,21 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const slug = (req.body.company_name || "client")
-  .replace(/\s+/g, "-")
-  .toLowerCase();
-const date = new Date().toISOString().slice(0, 10);
-const fileName = `${slug}-${date}.html`;
-const fullUrl = `https://${req.headers.host}/reports/${fileName}`;
-
-res.status(200).json({
-  message: "✅ Audit report generated",
-  reportUrl: fullUrl,
-});
-
 app.use(bodyParser.json());
 
 // ✅ Serve /reports as public URLs
 app.use("/reports", express.static(path.join(__dirname, "reports")));
 
-// Test route
+// 🔍 Health check
 app.get("/", (req, res) => {
   res.send("✅ Audit server is running");
 });
 
-// Generate audit route
+// 🎯 Main endpoint for Zapier
 app.post("/generate-audit", (req, res) => {
   const inputJSON = JSON.stringify(req.body);
 
   const generate = spawn("node", ["generate-report.js"]);
-
   generate.stdin.write(inputJSON);
   generate.stdin.end();
 
@@ -55,8 +42,14 @@ app.post("/generate-audit", (req, res) => {
       res.status(500).send("❌ Report generation failed");
     }
   });
+
+  generate.on("error", (err) => {
+    console.error("❌ Failed to spawn report generator:", err);
+    res.status(500).send("❌ Error generating report");
+  });
 });
 
+// 🚀 Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
