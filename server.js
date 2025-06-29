@@ -9,6 +9,10 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 // ✅ Serve /reports as public URLs
+app.use(
+  "/shared-assets",
+  express.static(path.join(__dirname, "shared-assets"))
+);
 app.use("/reports", express.static(path.join(__dirname, "reports")));
 
 // 🔍 Health check
