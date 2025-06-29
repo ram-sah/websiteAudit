@@ -28,6 +28,10 @@ app.post("/generate-audit", (req, res) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.send("✅ Audit Report Generator is running. POST to /generate-audit");
+});
+
 app.listen(3000, () => {
   console.log("Server running at http://localhost:3000");
 });
