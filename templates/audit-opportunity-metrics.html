@@ -1,0 +1,15 @@
+<section class="audit-opportunity-metrics" id="section-opportunities">
+    <h2>Keyword Opportunities</h2>
+    <div class="audit-opportunity-metrics__row">
+        {{#each keywordOpportunities}}
+        <div class="audit-opportunity-metrics__tile">
+            <div class="audit-opportunity-metrics__value">{{keyword}}</div>
+            <div class="audit-opportunity-metrics__label">
+                <p>Vol: {{searchVolume}} </p>
+                <p>Diff: {{difficulty}}</p>
+                <p>Priority: {{priority}}</p>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</section>

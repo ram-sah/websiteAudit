@@ -1,0 +1,29 @@
+<section class="audit-pillar" id="section-pillars">
+    <header class="audit-pillar__header">
+        <h2 class="audit-pillar__title">Local SEO Gaps</h2>
+        <span class="audit-pillar__score">{{local_seo_score}}</span>
+    </header>
+    <div class="audit-pillar__body">
+        <div class="audit-pillar__findings">
+            <h3>What We Found</h3>
+            <ul>
+                {{#each localSEOGaps}}
+                <li><strong>{{gap}}</strong>: {{actionRequired}}</li>
+                {{/each}}
+            </ul>
+        </div>
+        <div class="audit-pillar__why">
+            <h3>Why It Matters</h3>
+            <p>These gaps affect your visibility in local search results and Maps rankings. Addressing them improves
+                trust, relevance, and lead flow from your target service area.</p>
+        </div>
+        <div class="audit-pillar__metrics">
+            <h3>Key Metrics</h3>
+            <ul>
+                {{#each localSEOGaps}}
+                <li>Impact: {{impact}}, Difficulty: {{difficulty}}</li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</section>

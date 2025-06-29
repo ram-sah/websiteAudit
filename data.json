@@ -1,0 +1,139 @@
+{
+  "company_name": "Acme Dental",
+  "client_logo_url": "https://static.wixstatic.com/media/13160b_bb4198e3a6164df8a37ef0cda4c159ac~mv2.jpg/v1/fill/w_686,h_422,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Acme%20Dental%20Health%20Care%20Logo.jpg",
+  "industry": "Dental Services",
+  "audit_date": "2025-06-25",
+  "overall_score": 87,
+  "local_seo_score": 83,
+  "technical_seo_score": 97,
+  "content_quality_score": 80,
+  "authority_score": 98,
+  "clientName": "Acme Dental",
+  "businessType": "Dental Services",
+  "location": "Phoenix, AZ",
+  "auditDate": "2025-06-25",
+
+  "quickWins": [
+  {
+    "action": "Claim and optimize Google Business Profile",
+    "reason": "Improve visibility in local map pack",
+    "effort": "Low",
+    "impact": "High",
+    "timeline": "Within 7 days"
+  },
+  {
+    "action": "Add missing local schema markup to service pages",
+    "reason": "Enhance local SEO signals",
+    "effort": "Medium",
+    "impact": "High",
+    "timeline": "Within 14 days"
+  },
+  {
+    "action": "Update page titles with service + city keywords",
+    "reason": "Target high-intent local searches",
+    "effort": "Low",
+    "impact": "Medium",
+    "timeline": "This week"
+  }
+],
+
+
+"keywordOpportunities": [
+  {
+    "keyword": "Emergency dental phoenix",
+    "searchVolume": 1600,
+    "difficulty": "🟡 Medium",
+    "priority": "🔥 High"
+  },
+  {
+    "keyword": "Cosmetic dentist az",
+    "searchVolume": 720,
+    "difficulty": "🔴 High",
+    "priority": "⚡ Medium"
+  },
+  {
+    "keyword": "Same day dental implants",
+    "searchVolume": 480,
+    "difficulty": "🟢 Low",
+    "priority": "🔥 High"
+  }
+],
+
+
+"localSEOGaps": [
+  {
+    "gap": "Missing Google Business Profile",
+    "actionRequired": "Claim and verify GBP, add photos, business hours, and services.",
+    "impact": "High",
+    "difficulty": "Low"
+  },
+  {
+    "gap": "Inconsistent NAP across directories",
+    "actionRequired": "Update Name/Address/Phone on Yelp, YellowPages, and BBB listings.",
+    "impact": "Medium",
+    "difficulty": "Medium"
+  },
+  {
+    "gap": "No local schema markup",
+    "actionRequired": "Add JSON-LD LocalBusiness schema to homepage and service pages.",
+    "impact": "High",
+    "difficulty": "High"
+  }
+],
+
+
+"company_name": "Acme Dental",
+"client_traffic": 4200,
+"client_keywords": 180,
+"client_backlinks": 275,
+
+"competitorScores": [
+  {
+    "name": "BrightSmile Dental",
+    "url": "https://brightsmiledental.com",
+    "traffic": 5100,
+    "keywords": 240,
+    "backlinks": 315
+  },
+  {
+    "name": "Metro Smiles AZ",
+    "url": "https://metrosmilesaz.com",
+    "traffic": 3600,
+    "keywords": 160,
+    "backlinks": 190
+  },
+  {
+    "name": "Sun City Dental",
+    "url": "https://suncitydental.com",
+    "traffic": 4700,
+    "keywords": 205,
+    "backlinks": 290
+  }
+],
+
+
+"funnelInsights": [
+  {
+    "stage": "TOFU",
+    "gap": "Lack of educational blog content",
+    "recommendation": "Create blog posts answering common patient questions (e.g., 'Is teeth whitening safe?')"
+  },
+  {
+    "stage": "MOFU",
+    "gap": "No comparison pages for services",
+    "recommendation": "Add landing pages comparing Invisalign vs. Braces to support decision-making"
+  },
+  {
+    "stage": "BOFU",
+    "gap": "Missing strong CTAs on service pages",
+    "recommendation": "Add visible booking buttons and phone links on every service page"
+  }
+],
+
+"content_total": 58,
+"content_outdated": 14,
+"content_repurpose": 11,
+"content_top_performers": 6
+
+
+}

@@ -1,0 +1,16 @@
+<section class="audit-recommendations" id="section-recommendations">
+    <h2>Top Recommendations</h2>
+    <div class="audit-recommendation-list">
+        {{#each quickWins}}
+        <div class="audit-recommendation">
+            <h3 class="audit-recommendation__title">{{action}}</h3>
+            <p class="audit-recommendation__reason">{{reason}}</p>
+            <div class="audit-recommendation__meta">
+                <span class="recommendation-effort">Effort: {{effort}}</span> |
+                <span class="recommendation-impact">Impact: {{impact}}</span>
+                <p class="recommendation-timeline">Timeline: {{timeline}}</p>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</section>

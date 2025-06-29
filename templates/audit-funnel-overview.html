@@ -1,0 +1,37 @@
+<section class="audit-funnel-overview" id="section-funnel">
+    <h2>Funnel & Content Opportunities</h2>
+    <div class="audit-funnel-overview__grid">
+        <div class="audit-funnel-overview__stage audit-funnel-overview__stage--tofu">
+            <h3>TOFU</h3>
+            <ul>
+                {{#each funnelInsights}}
+                {{#if (eq stage "TOFU")}}
+                <li>{{gap}} – <strong>{{recommendation}}</strong></li>
+                {{/if}}
+                {{/each}}
+            </ul>
+        </div>
+
+        <div class="audit-funnel-overview__stage audit-funnel-overview__stage--mofu">
+            <h3>MOFU</h3>
+            <ul>
+                {{#each funnelInsights}}
+                {{#if (eq stage "MOFU")}}
+                <li>{{gap}} – <strong>{{recommendation}}</strong></li>
+                {{/if}}
+                {{/each}}
+            </ul>
+        </div>
+
+        <div class="audit-funnel-overview__stage audit-funnel-overview__stage--bofu">
+            <h3>BOFU</h3>
+            <ul>
+                {{#each funnelInsights}}
+                {{#if (eq stage "BOFU")}}
+                <li>{{gap}} – <strong>{{recommendation}}</strong></li>
+                {{/if}}
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</section>
