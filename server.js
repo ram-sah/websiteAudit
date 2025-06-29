@@ -6,6 +6,18 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const slug = (req.body.company_name || "client")
+  .replace(/\s+/g, "-")
+  .toLowerCase();
+const date = new Date().toISOString().slice(0, 10);
+const fileName = `${slug}-${date}.html`;
+const fullUrl = `https://${req.headers.host}/reports/${fileName}`;
+
+res.status(200).json({
+  message: "✅ Audit report generated",
+  reportUrl: fullUrl,
+});
+
 app.use(bodyParser.json());
 
 // ✅ Serve /reports as public URLs
