@@ -7,19 +7,16 @@ const app = express();
 app.use(bodyParser.json());
 
 // ✅ Serve all files in root
-// app.use(express.static(__dirname));
 app.use("/reports", express.static(path.join(__dirname, "reports")));
 app.use(
   "/shared-assets",
   express.static(path.join(__dirname, "shared-assets"))
 );
 
-// OR — best practice:
-// app.use("/reports", express.static(path.join(__dirname, "reports")));
-
 app.post("/generate-audit", (req, res) => {
-  const inputJSON = JSON.stringify(req.body);
+  console.log("✅ Received POST from Zapier:", req.body);
 
+  const inputJSON = JSON.stringify(req.body);
   const generate = spawn("node", ["generate-report.js"]);
 
   generate.stdin.write(inputJSON);
