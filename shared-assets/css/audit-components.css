@@ -140,6 +140,15 @@
   grid-template-columns: 1fr;
   gap: var(--space-xl);
 }
+
+.audit-recommendation-list {
+  max-width: 1200px;
+  /* margin: var(--space-3xl) auto; */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
+  gap: var(--space-xl);
+}
+
 .audit-recommendation {
   background: var(--white);
   border-left: 6px solid var(--air-blue);
@@ -192,10 +201,11 @@
   justify-content: center;
 }
 .audit-opportunity-metrics__value {
-  font-size: var(--text-2xl);
+  font-size: var(--text-lg);
   font-weight: var(--weight-bold);
   color: var(--space-cadet);
   margin-bottom: var(--space-sm);
+  text-transform: capitalize;
 }
 .audit-opportunity-metrics__label {
   font-size: var(--text-base);
