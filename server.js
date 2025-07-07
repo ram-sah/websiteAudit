@@ -63,25 +63,28 @@ app.post("/generate-audit", (req, res) => {
 // ✅ Dynamic report viewer (fetch from Airtable using slug)
 app.get("/reports/:slug", async (req, res) => {
   const slug = decodeURIComponent(req.params.slug);
-  try {
-    const encodedFormula = encodeURIComponent(`{report_slug}="${slug}"`);
-    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula=${encodedFormula}`;
+  const formula = encodeURIComponent(`{report_slug} = "${slug}"`);
+  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(
+    AIRTABLE_TABLE_NAME
+  )}?filterByFormula=${formula}`;
 
+  try {
     const response = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+        Authorization: `Bearer ${AIRTABLE_API_KEY}`, // ✅ Ensure "Bearer" is present
       },
     });
 
     const records = response.data.records;
-    if (!records.length)
+    if (!records.length) {
       return res.status(404).send("Report not found in Airtable");
+    }
 
     const data = records[0].fields;
     const html = await renderReportToString(data);
     res.send(html);
   } catch (error) {
-    console.error("Error rendering dynamic report:", error.message);
+    console.error("❌ Airtable fetch failed:", error.message);
     res.status(500).send("Error generating dynamic report");
   }
 });
