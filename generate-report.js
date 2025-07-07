@@ -4,6 +4,7 @@ const Handlebars = require("handlebars");
 
 const templatesDir = path.join(__dirname, "templates");
 const reportsDir = path.join(__dirname, "reports");
+const company = slugify(inputData.company_name || "client");
 
 Handlebars.registerHelper("eq", function (a, b) {
   if (typeof a === "string" && typeof b === "string") {
