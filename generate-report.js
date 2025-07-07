@@ -144,11 +144,14 @@ function readInput() {
   });
 }
 
-readInput()
-  .then(renderReportToDisk)
-  .catch((err) => {
-    console.error("❌ Error:", err.message);
-    process.exit(1);
-  });
+// Run only if called directly (e.g. via CLI, Zapier)
+if (require.main === module) {
+  readInput()
+    .then(renderReportToDisk)
+    .catch((err) => {
+      console.error("❌ Error:", err.message);
+      process.exit(1);
+    });
+}
 
 module.exports = { renderReportToDisk, renderReportToString };
