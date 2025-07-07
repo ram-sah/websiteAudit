@@ -12,13 +12,6 @@ Icon
 
 
 ############################
-# Linux
-############################
-
-*~
-
-
-############################
 # Windows
 ############################
 
@@ -130,3 +123,6 @@ build
 .strapi-updater.json
 .strapi-cloud.json
 help.md
+
+# Reports & generated files (optional)
+reports/

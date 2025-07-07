@@ -2,25 +2,32 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { spawn } = require("child_process");
 const path = require("path");
+const fs = require("fs");
+const axios = require("axios");
+const Handlebars = require("handlebars");
+const { renderReportToString } = require("./generate-report");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+require("dotenv").config();
+
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
+const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_TABLE_NAME;
+
 app.use(bodyParser.json());
 
-// ✅ Static file hosting
 app.use("/reports", express.static(path.join(__dirname, "reports")));
 app.use(
   "/shared-assets",
   express.static(path.join(__dirname, "shared-assets"))
 );
 
-// 🧪 Health check
 app.get("/", (req, res) => {
   res.send("✅ Audit server is running");
 });
 
-// 🔁 Main endpoint
 app.post("/generate-audit", (req, res) => {
   const inputJSON = JSON.stringify(req.body);
   const generate = spawn("node", ["generate-report.js"]);
@@ -32,7 +39,7 @@ app.post("/generate-audit", (req, res) => {
     if (code === 0) {
       try {
         const slug = (req.body.company_name || "client")
-          .replace(/\s+/g, "-")
+          .replace(/\\s+/g, "-")
           .toLowerCase();
         const date = new Date().toISOString().slice(0, 10);
         const fileName = `${slug}-${date}.html`;
@@ -57,10 +64,101 @@ app.post("/generate-audit", (req, res) => {
   });
 });
 
-// 🚀 Start server
+app.get("/reports/:slug", async (req, res) => {
+  const slug = req.params.slug;
+
+  try {
+    const airtableURL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula={report_slug}='${slug}'`;
+
+    const response = await axios.get(airtableURL, {
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+      },
+    });
+
+    const records = response.data.records;
+    if (records.length === 0) {
+      return res.status(404).send("Report not found in Airtable");
+    }
+
+    const data = records[0].fields;
+    const html = await renderReportToString(data);
+    res.send(html);
+  } catch (error) {
+    console.error("Error rendering dynamic report:", error.message);
+    res.status(500).send("Error generating dynamic report");
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
+//working code trying to update, and slug =================
+
+// const express = require("express");
+// const bodyParser = require("body-parser");
+// const { spawn } = require("child_process");
+// const path = require("path");
+
+// const app = express();
+// const PORT = process.env.PORT || 3000;
+
+// app.use(bodyParser.json());
+
+// // ✅ Static file hosting
+// app.use("/reports", express.static(path.join(__dirname, "reports")));
+// app.use(
+//   "/shared-assets",
+//   express.static(path.join(__dirname, "shared-assets"))
+// );
+
+// // 🧪 Health check
+// app.get("/", (req, res) => {
+//   res.send("✅ Audit server is running");
+// });
+
+// // 🔁 Main endpoint
+// app.post("/generate-audit", (req, res) => {
+//   const inputJSON = JSON.stringify(req.body);
+//   const generate = spawn("node", ["generate-report.js"]);
+
+//   generate.stdin.write(inputJSON);
+//   generate.stdin.end();
+
+//   generate.on("close", (code) => {
+//     if (code === 0) {
+//       try {
+//         const slug = (req.body.company_name || "client")
+//           .replace(/\s+/g, "-")
+//           .toLowerCase();
+//         const date = new Date().toISOString().slice(0, 10);
+//         const fileName = `${slug}-${date}.html`;
+//         const fullUrl = `https://${req.headers.host}/reports/${fileName}`;
+
+//         console.log("✅ Report ready at:", fullUrl);
+//         res.status(200).json({
+//           message: "✅ Audit report generated",
+//           reportUrl: fullUrl,
+//         });
+//       } catch (err) {
+//         res.status(500).send("✅ Generated but URL build failed");
+//       }
+//     } else {
+//       res.status(500).send("❌ Report generation failed");
+//     }
+//   });
+
+//   generate.on("error", (err) => {
+//     console.error("❌ spawn error:", err);
+//     res.status(500).send("❌ Internal error");
+//   });
+// });
+
+// // 🚀 Start server
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running on port ${PORT}`);
+// });
 
 // const express = require("express");
 // const bodyParser = require("body-parser");
