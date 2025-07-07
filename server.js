@@ -1,4 +1,4 @@
-const express = require("express");
+// const express = require("express");
 const bodyParser = require("body-parser");
 const { spawn } = require("child_process");
 const path = require("path");
@@ -16,15 +16,7 @@ const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
 const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_TABLE_NAME;
 
-app.use(bodyParser.json());
-
-app.use("/reports", express.static(path.join(__dirname, "reports")));
-app.use(
-  "/shared-assets",
-  express.static(path.join(__dirname, "shared-assets"))
-);
-
-// ✅ Slugify helper (same as Zapier Step 3)
+// ✅ Slugify helper to clean up file names
 const slugify = (str) =>
   (str || "")
     .toLowerCase()
@@ -33,12 +25,21 @@ const slugify = (str) =>
     .replace(/[^\w-]/g, "")
     .replace(/--+/g, "-");
 
-// 🧪 Health check
+app.use(bodyParser.json());
+
+// ✅ Serve static assets
+app.use("/reports", express.static(path.join(__dirname, "reports")));
+app.use(
+  "/shared-assets",
+  express.static(path.join(__dirname, "shared-assets"))
+);
+
+// ✅ Health check
 app.get("/", (req, res) => {
   res.send("✅ Audit server is running");
 });
 
-// 🔁 Triggered by Zapier to generate and save static file
+// 🔁 Zapier trigger: Generate static HTML
 app.post("/generate-audit", (req, res) => {
   const inputJSON = JSON.stringify(req.body);
   const generate = spawn("node", ["generate-report.js"]);
@@ -73,7 +74,7 @@ app.post("/generate-audit", (req, res) => {
   });
 });
 
-// 🆕 Dynamic Report Viewer (rendered live from Airtable)
+// 📄 Dynamic HTML view via Airtable (live rendering)
 app.get("/reports/:slug", async (req, res) => {
   const slug = decodeURIComponent(req.params.slug);
 
