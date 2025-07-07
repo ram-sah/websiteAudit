@@ -1,33 +1,20 @@
-// const express = require("express");
+const express = require("express");
 const bodyParser = require("body-parser");
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 const axios = require("axios");
-const Handlebars = require("handlebars");
 const { renderReportToString } = require("./generate-report");
+require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-require("dotenv").config();
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
 const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_TABLE_NAME;
 
-// ✅ Slugify helper to clean up file names
-const slugify = (str) =>
-  (str || "")
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]/g, "")
-    .replace(/--+/g, "-");
-
 app.use(bodyParser.json());
-
-// ✅ Serve static assets
 app.use("/reports", express.static(path.join(__dirname, "reports")));
 app.use(
   "/shared-assets",
@@ -39,7 +26,7 @@ app.get("/", (req, res) => {
   res.send("✅ Audit server is running");
 });
 
-// 🔁 Zapier trigger: Generate static HTML
+// ✅ Report generation from Zapier
 app.post("/generate-audit", (req, res) => {
   const inputJSON = JSON.stringify(req.body);
   const generate = spawn("node", ["generate-report.js"]);
@@ -50,9 +37,8 @@ app.post("/generate-audit", (req, res) => {
   generate.on("close", (code) => {
     if (code === 0) {
       try {
-        const slug = slugify(req.body.company_name || "client");
-        const date = new Date().toISOString().slice(0, 10);
-        const fileName = `${slug}-${date}.html`;
+        const slug = req.body.report_slug;
+        const fileName = `${slug}.html`;
         const fullUrl = `https://${req.headers.host}/reports/${fileName}`;
 
         console.log("✅ Report ready at:", fullUrl);
@@ -60,7 +46,7 @@ app.post("/generate-audit", (req, res) => {
           message: "✅ Audit report generated",
           reportUrl: fullUrl,
         });
-      } catch (err) {
+      } catch {
         res.status(500).send("✅ Generated but URL build failed");
       }
     } else {
@@ -74,24 +60,22 @@ app.post("/generate-audit", (req, res) => {
   });
 });
 
-// 📄 Dynamic HTML view via Airtable (live rendering)
+// ✅ Dynamic report viewer (fetch from Airtable using slug)
 app.get("/reports/:slug", async (req, res) => {
   const slug = decodeURIComponent(req.params.slug);
-
   try {
     const encodedFormula = encodeURIComponent(`{report_slug}="${slug}"`);
-    const airtableURL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula=${encodedFormula}`;
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula=${encodedFormula}`;
 
-    const response = await axios.get(airtableURL, {
+    const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${AIRTABLE_API_KEY}`,
       },
     });
 
     const records = response.data.records;
-    if (records.length === 0) {
+    if (!records.length)
       return res.status(404).send("Report not found in Airtable");
-    }
 
     const data = records[0].fields;
     const html = await renderReportToString(data);
@@ -102,7 +86,6 @@ app.get("/reports/:slug", async (req, res) => {
   }
 });
 
-// 🚀 Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

@@ -5,12 +5,23 @@ const Handlebars = require("handlebars");
 const templatesDir = path.join(__dirname, "templates");
 const reportsDir = path.join(__dirname, "reports");
 
-Handlebars.registerHelper("eq", function (a, b) {
-  if (typeof a === "string" && typeof b === "string") {
-    return a.trim().toLowerCase() === b.trim().toLowerCase();
-  }
-  return a === b;
-});
+// Slugify helper for consistency
+function slugify(text) {
+  return (text || "")
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-");
+}
+
+// Register custom helpers
+Handlebars.registerHelper("eq", (a, b) =>
+  typeof a === "string" && typeof b === "string"
+    ? a.trim().toLowerCase() === b.trim().toLowerCase()
+    : a === b
+);
 
 const sections = [
   "audit-header.html",
@@ -24,20 +35,11 @@ const sections = [
   "audit-footer.html",
 ];
 
-function slugify(text) {
-  return (text || "")
-    .toString()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]+/g, "")
-    .replace(/--+/g, "-")
-    .trim();
-}
-
-// ✅ Write HTML to disk
+// ⬇ Render to file
 async function renderReportToDisk(inputData) {
   inputData.current_year = new Date().getFullYear();
 
+  // Parse JSON fields from Zapier safely
   [
     "quickWins",
     "keywordOpportunities",
@@ -49,7 +51,6 @@ async function renderReportToDisk(inputData) {
       try {
         inputData[key] = JSON.parse(inputData[key]);
       } catch {
-        console.warn(`⚠️ Failed to parse field ${key}`);
         inputData[key] = [];
       }
     }
@@ -57,35 +58,24 @@ async function renderReportToDisk(inputData) {
 
   const slug =
     inputData.report_slug ||
-    `${slugify(inputData.company_name || "client")}-${new Date()
+    `${slugify(inputData.company_name)}-${new Date()
       .toISOString()
       .slice(0, 10)}`;
-
   const filename = `${slug}.html`;
   const outputPath = path.join(reportsDir, filename);
 
-  let fullHTML = "";
-
-  for (const file of sections) {
-    const templatePath = path.join(templatesDir, file);
-    const templateContent = await fs.readFile(templatePath, "utf-8");
-    const template = Handlebars.compile(templateContent);
-
-    if (file === "audit-pillar.html" && Array.isArray(inputData.pillars)) {
-      for (const pillar of inputData.pillars) {
-        fullHTML += template(pillar);
-      }
-    } else {
-      fullHTML += template(inputData);
-    }
+  let html = "";
+  for (const section of sections) {
+    const templatePath = path.join(templatesDir, section);
+    const content = await fs.readFile(templatePath, "utf-8");
+    const template = Handlebars.compile(content);
+    html += template(inputData);
   }
 
-  await fs.outputFile(outputPath, fullHTML);
+  await fs.outputFile(outputPath, html);
   console.log("✅ Report written to:", outputPath);
-  console.log(`🌐 Available at: /reports/${filename}`);
 }
 
-// ✅ Return compiled HTML string
 async function renderReportToString(inputData) {
   inputData.current_year = new Date().getFullYear();
 
@@ -100,48 +90,35 @@ async function renderReportToString(inputData) {
       try {
         inputData[key] = JSON.parse(inputData[key]);
       } catch {
-        console.warn(`⚠️ Failed to parse field ${key}`);
         inputData[key] = [];
       }
     }
   });
 
   let html = "";
-
-  for (const file of sections) {
-    const templatePath = path.join(templatesDir, file);
-    const templateContent = await fs.readFile(templatePath, "utf-8");
-    const template = Handlebars.compile(templateContent);
-
-    if (file === "audit-pillar.html" && Array.isArray(inputData.pillars)) {
-      for (const pillar of inputData.pillars) {
-        html += template(pillar);
-      }
-    } else {
-      html += template(inputData);
-    }
+  for (const section of sections) {
+    const templatePath = path.join(templatesDir, section);
+    const content = await fs.readFile(templatePath, "utf-8");
+    const template = Handlebars.compile(content);
+    html += template(inputData);
   }
 
   return html;
 }
 
-// ✅ Read from stdin (Zapier webhook)
 function readInput() {
   return new Promise((resolve, reject) => {
     if (process.stdin.isTTY) {
-      const dataPath = path.join(__dirname, "data.json");
-      console.log("📁 Reading from local file:", dataPath);
-      fs.readJson(dataPath)
+      fs.readJson(path.join(__dirname, "data.json"))
         .then(resolve)
-        .catch((err) => reject(new Error("Failed to read data.json")));
+        .catch(reject);
     } else {
       let raw = "";
       process.stdin.setEncoding("utf8");
       process.stdin.on("data", (chunk) => (raw += chunk));
       process.stdin.on("end", () => {
         try {
-          const parsed = JSON.parse(raw);
-          resolve(parsed);
+          resolve(JSON.parse(raw));
         } catch (err) {
           reject(new Error("Invalid JSON from stdin"));
         }
@@ -150,7 +127,6 @@ function readInput() {
   });
 }
 
-// ✅ Only run when triggered directly
 if (require.main === module) {
   readInput()
     .then(renderReportToDisk)
