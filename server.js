@@ -18,12 +18,20 @@ const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_TABLE_NAME;
 
 app.use(bodyParser.json());
 
-// ✅ Static file hosting
 app.use("/reports", express.static(path.join(__dirname, "reports")));
 app.use(
   "/shared-assets",
   express.static(path.join(__dirname, "shared-assets"))
 );
+
+// ✅ Slugify helper (same as Zapier Step 3)
+const slugify = (str) =>
+  (str || "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]/g, "")
+    .replace(/--+/g, "-");
 
 // 🧪 Health check
 app.get("/", (req, res) => {
@@ -41,11 +49,7 @@ app.post("/generate-audit", (req, res) => {
   generate.on("close", (code) => {
     if (code === 0) {
       try {
-        const slug = (req.body.company_name || "client")
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^\w-]+/g, "")
-          .replace(/--+/g, "-");
+        const slug = slugify(req.body.company_name || "client");
         const date = new Date().toISOString().slice(0, 10);
         const fileName = `${slug}-${date}.html`;
         const fullUrl = `https://${req.headers.host}/reports/${fileName}`;
