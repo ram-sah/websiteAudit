@@ -4,7 +4,6 @@ const Handlebars = require("handlebars");
 
 const templatesDir = path.join(__dirname, "templates");
 const reportsDir = path.join(__dirname, "reports");
-const company = slugify(inputData.company_name || "client");
 
 Handlebars.registerHelper("eq", function (a, b) {
   if (typeof a === "string" && typeof b === "string") {
@@ -29,15 +28,15 @@ function slugify(text) {
   return (text || "")
     .toString()
     .toLowerCase()
-    .replace(/\\s+/g, "-")
-    .replace(/[^\\w-]+/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]+/g, "")
     .replace(/--+/g, "-")
     .trim();
 }
 
+// ✅ Write HTML to disk
 async function renderReportToDisk(inputData) {
   inputData.current_year = new Date().getFullYear();
-  console.log("📦 Input keys:", Object.keys(inputData));
 
   [
     "quickWins",
@@ -56,9 +55,13 @@ async function renderReportToDisk(inputData) {
     }
   });
 
-  const company = slugify(inputData.company_name || "client");
-  const date = new Date().toISOString().slice(0, 10);
-  const filename = `${company}-${date}.html`;
+  const slug =
+    inputData.report_slug ||
+    `${slugify(inputData.company_name || "client")}-${new Date()
+      .toISOString()
+      .slice(0, 10)}`;
+
+  const filename = `${slug}.html`;
   const outputPath = path.join(reportsDir, filename);
 
   let fullHTML = "";
@@ -78,10 +81,11 @@ async function renderReportToDisk(inputData) {
   }
 
   await fs.outputFile(outputPath, fullHTML);
-  console.log("Report written to:", outputPath);
-  console.log(`Report available at: /reports/${filename}`);
+  console.log("✅ Report written to:", outputPath);
+  console.log(`🌐 Available at: /reports/${filename}`);
 }
 
+// ✅ Return compiled HTML string
 async function renderReportToString(inputData) {
   inputData.current_year = new Date().getFullYear();
 
@@ -121,11 +125,12 @@ async function renderReportToString(inputData) {
   return html;
 }
 
+// ✅ Read from stdin (Zapier webhook)
 function readInput() {
   return new Promise((resolve, reject) => {
     if (process.stdin.isTTY) {
       const dataPath = path.join(__dirname, "data.json");
-      console.log(" Reading from local file:", dataPath);
+      console.log("📁 Reading from local file:", dataPath);
       fs.readJson(dataPath)
         .then(resolve)
         .catch((err) => reject(new Error("Failed to read data.json")));
@@ -145,7 +150,7 @@ function readInput() {
   });
 }
 
-// Run only if called directly (e.g. via CLI, Zapier)
+// ✅ Only run when triggered directly
 if (require.main === module) {
   readInput()
     .then(renderReportToDisk)
