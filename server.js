@@ -61,8 +61,13 @@ app.post("/generate-audit", (req, res) => {
 });
 
 // ✅ Dynamic report viewer (fetch from Airtable using slug)
+// ✅ Dynamic report viewer (fetch from Airtable using slug)
 app.get("/reports/:slug", async (req, res) => {
-  const slug = decodeURIComponent(req.params.slug);
+  let slug = decodeURIComponent(req.params.slug);
+  if (slug.endsWith(".html")) {
+    slug = slug.slice(0, -5); // Remove .html for Airtable match
+  }
+
   const formula = encodeURIComponent(`{report_slug} = "${slug}"`);
   const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(
     AIRTABLE_TABLE_NAME
@@ -71,7 +76,7 @@ app.get("/reports/:slug", async (req, res) => {
   try {
     const response = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${AIRTABLE_API_KEY}`, // ✅ Ensure "Bearer" is present
+        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
       },
     });
 
