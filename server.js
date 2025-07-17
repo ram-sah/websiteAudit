@@ -61,7 +61,6 @@ app.post("/generate-audit", (req, res) => {
 });
 
 // ✅ Dynamic report viewer (fetch from Airtable using slug)
-// ✅ Dynamic report viewer (fetch from Airtable using slug)
 app.get("/reports/:slug", async (req, res) => {
   let slug = decodeURIComponent(req.params.slug);
   if (slug.endsWith(".html")) {

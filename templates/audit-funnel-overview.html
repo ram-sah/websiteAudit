@@ -1,37 +1,39 @@
 <section class="audit-funnel-overview" id="section-funnel">
     <h2>Funnel & Content Opportunities</h2>
     <div class="audit-funnel-overview__grid">
+
         <div class="audit-funnel-overview__stage audit-funnel-overview__stage--tofu">
-            <h3>TOFU</h3>
+            <h3>AWARENESS </h3>
             <ul>
                 {{#each funnelInsights}}
-                {{#eq stage "TOFU"}}
+                {{#if (eq stage "Awareness")}}
                 <li>{{gap}} – <strong>{{recommendation}}</strong></li>
-                {{/eq}}
+                {{/if}}
                 {{/each}}
             </ul>
         </div>
 
         <div class="audit-funnel-overview__stage audit-funnel-overview__stage--mofu">
-            <h3>MOFU</h3>
+            <h3>CONSIDERATION </h3>
             <ul>
                 {{#each funnelInsights}}
-                {{#eq stage "MOFU"}}
+                {{#if (eq stage "Consideration")}}
                 <li>{{gap}} – <strong>{{recommendation}}</strong></li>
-                {{/eq}}
+                {{/if}}
                 {{/each}}
             </ul>
         </div>
 
         <div class="audit-funnel-overview__stage audit-funnel-overview__stage--bofu">
-            <h3>BOFU</h3>
+            <h3>DECISION </h3>
             <ul>
                 {{#each funnelInsights}}
-                {{#eq stage "BOFU"}}
+                {{#if (eq stage "Decision")}}
                 <li>{{gap}} – <strong>{{recommendation}}</strong></li>
-                {{/eq}}
+                {{/if}}
                 {{/each}}
             </ul>
         </div>
+
     </div>
 </section>

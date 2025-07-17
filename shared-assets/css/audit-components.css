@@ -452,3 +452,13 @@
     background: none !important;
   }
 }
+
+.audit-funnel-overview__stage--TOFU {
+  background: #f0f9ff;
+}
+.audit-funnel-overview__stage--MOFU {
+  background: #fef9f0;
+}
+.audit-funnel-overview__stage--BOFU {
+  background: #f8f0ff;
+}
